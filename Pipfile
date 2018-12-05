@@ -9,6 +9,8 @@ jupyter = "*"
 lxml = "*"
 jupyterlab = "*"
 pandas = "*"
+click = "*"
+tqdm = "*"
 
 [dev-packages]
 
