@@ -70,15 +70,17 @@ def parse(src):
     html = '\n'.join(lines)
     tree = lxml.html.document_fromstring(html)
 
-    # Stip <cite> tags.
-    # cleaner = Cleaner(remove_tags=['cite'])
-    # tree = cleaner.clean_html(tree)
-
     rows = list(rows_iter(tree))
-    df = pd.DataFrame(rows, columns=('age', 'region', 'author', 'title'))
 
+    columns = ('age', 'region', 'author', 'title')
+    df = pd.DataFrame(rows, columns=columns)
+
+    # Strip field values.
     for c in df.columns:
         df[c] = df[c].str.strip()
+
+    df['id'] = df.index
+    df = df[['id', *columns]]
 
     df.to_json('canon.json', orient='records', lines=True)
     df.to_csv('canon.csv')
