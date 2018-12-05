@@ -55,6 +55,14 @@ def rows_iter(tree):
             yield (age, region, author, el.text_content())
 
 
+# TODO: Be smarter here? Eg, "Diego de San Pedro" -> "San Pedro," not "Pedro."
+def split_surname(name):
+    """Split out the author surname.
+    """
+    if name:
+        return name.split(' ')[-1]
+
+
 @click.command()
 @click.argument('src', type=click.Path(), default='bloom.html')
 def parse(src):
@@ -79,8 +87,8 @@ def parse(src):
     for c in df.columns:
         df[c] = df[c].str.strip()
 
+    df['surname'] = df.author.apply(split_surname)
     df['id'] = df.index
-    df = df[['id', *columns]]
 
     df.to_json('canon.json', orient='records', lines=True)
     df.to_csv('canon.csv')
