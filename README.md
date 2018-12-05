@@ -10,6 +10,7 @@ http://sonic.net/~rteeter/grtbloom.html
 **TODO**
 
 - Smarter surname parsing. Eg, `Diego de San Pedro` -> `San Pedro`, not just `Pedro`.
+
 - A few inconsistently formatted authors get parsed as titles.
   - `Archilochos, Sappho, Alkman`
   - `The Pre-Socratics (Heraclitus, Empedocles)`
