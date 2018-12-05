@@ -5,4 +5,9 @@ CSV + JSON of the list from Harold Bloom's [The Western Canon](https://en.wikipe
 
 http://sonic.net/~rteeter/grtbloom.html
 
-**NB** - I don't endorse the intellectual politics of this list. It is useful though as a signal of what was considered canonical by the establishment academy circa 1990.
+*NB* - I don't endorse the intellectual politics of this list. It is useful, though, as a signal of what was considered canonical by the establishment academy circa 1990.
+
+**TODO**
+
+- [] Smarter surname parsing. Eg, `Diego de San Pedro` -> `San Pedro`, not just `Pedro`.
+- [] A few inconsistently formatted authors get parsed as titles. Eg `Archilochos, Sappho, Alkman`.
