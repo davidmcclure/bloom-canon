@@ -18,26 +18,9 @@ def close_li(line):
     return line
 
 
-@click.command()
-@click.argument('src', type=click.Path(), default='bloom.html')
-def parse(src):
-    """Parse HTML, dump formats.
+def rows_iter(tree):
+    """Assemble (age, region, author, title) from tag order.
     """
-    with open(src) as fh:
-        lines = fh.read().replace('\t', '').splitlines()
-
-    # Close un-closed <li> tags.'
-    lines = list(map(close_li, lines))
-
-    # Parse HTML.
-    html = '\n'.join(lines)
-    tree = lxml.html.document_fromstring(html)
-
-    # Stip <cite> tags.
-    cleaner = Cleaner(remove_tags=['cite'])
-    tree = cleaner.clean_html(tree)
-
-    rows = []
     age, region, author = None, None, None
 
     for el in tqdm(tree.iter()):
@@ -57,11 +40,32 @@ def parse(src):
 
             else:
                 author = None
-                rows.append((age, region, author, el.text))
+                yield (age, region, author, el.text)
 
         elif el.tag == 'dd':
-            rows.append((age, region, author, el.text))
+            yield (age, region, author, el.text)
 
+
+@click.command()
+@click.argument('src', type=click.Path(), default='bloom.html')
+def parse(src):
+    """Parse HTML, dump formats.
+    """
+    with open(src) as fh:
+        lines = fh.read().replace('\t', '').splitlines()
+
+    # Close un-closed <li> tags.'
+    lines = list(map(close_li, lines))
+
+    # Parse HTML.
+    html = '\n'.join(lines)
+    tree = lxml.html.document_fromstring(html)
+
+    # Stip <cite> tags.
+    cleaner = Cleaner(remove_tags=['cite'])
+    tree = cleaner.clean_html(tree)
+
+    rows = list(rows_iter(tree))
     df = pd.DataFrame(rows, columns=('age', 'region', 'author', 'title'))
 
     for c in df.columns:
