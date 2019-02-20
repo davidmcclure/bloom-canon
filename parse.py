@@ -55,12 +55,23 @@ def rows_iter(tree):
             yield (age, region, author, el.text_content())
 
 
-# TODO: Be smarter here? Eg, "Diego de San Pedro" -> "San Pedro," not "Pedro."
-def split_surname(name):
+# TODO: Be smarter here. Breaks on:
+# Diego de San Pedro
+# Alfred, Lord Tennyson
+
+# TODO: Parse middle names? Eg:
+# Frederick Goddard Tuckerman
+
+def split_given_surname(name):
     """Split out the author surname.
     """
-    if name:
-        return name.split(' ')[-1]
+    name = name or ''
+
+    parts = name.split(' ')
+    given_name = ' '.join(parts[:-1]) or None
+    surname = parts[-1] or None
+
+    return given_name, surname
 
 
 @click.command()
@@ -87,7 +98,10 @@ def parse(src):
     for c in df.columns:
         df[c] = df[c].str.strip()
 
-    df['surname'] = df.author.apply(split_surname)
+    given_name, surname = zip(*df.author.apply(split_given_surname))
+    df['given_name'] = given_name
+    df['surname'] = surname
+
     df['id'] = df.index
 
     df.to_json('canon.json', orient='records', lines=True)
